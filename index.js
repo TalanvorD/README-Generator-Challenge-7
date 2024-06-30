@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const fs = require('fs');
 
-const writeToFile = (name, location, email, github) => { // Takes in name, location, email and github arguments and dynamically creates a README.md file utilizing them
+const writeToFile = (title, description, installation, usage, credits, license, repo, screenshot) => { // Takes in name, location, email and github arguments and dynamically creates a README.md file utilizing them
     fs.writeFile('generated README.md', `
       <div class="six columns"><h3>Hello! My name is ${name}</h3></div>
       <div class="six columns"><h3>I am located in ${location}</h3></div>
@@ -17,25 +17,46 @@ inquirer
   .prompt([ // Prompting the user for information regarding the README.md to be generated
     {
       type: "input",
-      message: "What's your name?",
-      name: "name"
+      message: "What's the title of your project?",
+      name: "title"
     },
     {
         type: "input",
-        message: "What's your location?",
-        name: "location"
+        message: "Write a description for your project:",
+        name: "description"
     },
     {
         type: "input",
-        message: "What's your e-mail address?",
-        name: "email"
+        message: "How is your project installed?",
+        name: "installation"
     },
     {
         type: "input",
-        message: "What's your github handle?",
-        name: "github"
+        message: "How is your project used?",
+        name: "usage"
+    },
+    {
+        type: "input",
+        message: "Are there any credits you would like to add?",
+        name: "credits"
+    },
+    {
+        type: "list",
+        message: "Choose a license:",
+        choices: ["None", "MIT License", "GNU AGPLv3", "GNU GPLv3", "GNU LGPLv3", "Mozilla Public License 2.0", "Apache License 2.0", "Boost Software License 1.0", "The Unlicense"],
+        name: "license"
+    },
+    {
+        type: "input",
+        message: "What is the URL for the repository?",
+        name: "repo-link"
+    },
+    {
+        type: "input",
+        message: "Add a screenshot from the assets/image folder:",
+        name: "screenshot"
     }
   ])
   .then(response => {
-    writeToFile(response.name, response.location, response.email, response.github); // Calls the function to write the README.md
+    writeToFile(response.title, response.description, response.installation, response.usage, response.credits, response.license, response.repo-link, response.screenshot); // Calls the function to write the README.md
 });
