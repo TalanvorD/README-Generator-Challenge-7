@@ -1,9 +1,53 @@
 const inquirer = require("inquirer");
 const fs = require('fs');
+const licenseArray = 
+  [{
+    licenseName: "None",
+    licenseBadge: "",
+    licenseURL: ""
+  },
+  {
+    licenseName: "MIT License",
+    licenseBadge: "[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)",
+    licenseURL: "https://spdx.org/licenses/MIT.html"
+  },
+  {
+    licenseName: "GNU AGPLv3",
+    licenseBadge: "[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)",
+    licenseURL: "https://spdx.org/licenses/AGPL-3.0-or-later.html"
+  },
+  {
+    licenseName: "GNU General Public License v3.0",
+    licenseBadge: "[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)",
+    licenseURL: "https://spdx.org/licenses/GPL-3.0-or-later.html"
+  },
+  {
+    licenseName: "Mozilla Public License 2",
+    licenseBadge: "[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)",
+    licenseURL: "https://spdx.org/licenses/MPL-2.0.html"
+  },
+  {
+    licenseName: "Apache License 2",
+    licenseBadge: "",
+    licenseURL: "https://spdx.org/licenses/Apache-2.0.html"
+  },
+  {
+    licenseName: "The Unlicense",
+    licenseBadge: "[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)",
+    licenseURL: "https://spdx.org/licenses/Unlicense.html"
+  },
+  {
+    licenseName: "Boost Software License 1",
+    licenseBadge: "[![License](https://img.shields.io/badge/License-Boost_1.0-lightblue.svg)](https://www.boost.org/LICENSE_1_0.txt)",
+    licenseURL: "https://spdx.org/licenses/BSL-1.0.html"
+  }
+];
 
 const writeToFile = (title, description, installation, usage, credits, testing, license, github, email, repo, screenshot) => { // Takes in name, location, email and github arguments and writes a dynamic html file utilizing them
+  const licenseObject = licenseArray.find(({ licenseName }) => licenseName === license); // Finding the specific object in the licenseArray
+  
   fs.writeFile('generated-README.md', `
-# ${title}
+# ${title} ${licenseObject.licenseBadge}
 
 ## Description
 
@@ -17,7 +61,6 @@ ${description}
 - [Contributing](#contributing)
 - [Questions](#questions)
 - [Repository](#repository)
-- [Screenshot](#screenshot)
 
 ## Installation
 
@@ -29,28 +72,26 @@ ${usage}
 
 ## License
 
-${license} // This will need to be an created using a comparitive statement to generate the appropriate text
+[${licenseObject.licenseName}](${licenseObject.licenseURL})
 
 ## Contributing
 
 ${credits}
 
 ## Tests
-${testing} // Testing framework i.e. jest?
+${testing}
 
 ## Questions
 
 For any questions:
-Find me on github at ![${github}]https://github.com/${github}
-Send me an email at ![${email}]mailto://${email}
+
+Find me on [github](https://github.com/${github})!
+
+Send me an [email](mailto://${email})!
 
 ## Repository
 
-![${repo}]${repo}
-
-## Screenshot
-
-![${screenshot}](assets/images/${screenshot})`, (err) => err ? console.error(err) : console.log('Success!'));
+[${repo}](${repo})`, (err) => err ? console.error(err) : console.log('Success!'));
   return;
 };
 
@@ -62,8 +103,8 @@ inquirer
       name: "title"
     },
     {
-        type: "input",
-        message: "Write a description for your project:",
+        type: "editor",
+        message: "Write a description for your project.",
         name: "description"
     },
     {
@@ -83,14 +124,15 @@ inquirer
     },
     {
         type: "input",
-        message: "Testing?", // I'm assuming something like jest is supposed to be entered here
+        message: "Testing done?",
         name: "testing"
     },
     {
         type: "list",
+        loop: false,
         message: "Choose a license:",
-        choices: ["None", "MIT License", "GNU AGPLv3", "GNU GPLv3", "GNU LGPLv3", "Mozilla Public License 2", "Apache License 2", "Boost Software License 1", "The Unlicense"],
-        name: "license"
+        choices: licenseArray.map(it => it.licenseName), // Pulling the licenseName property of each object to use as a list of choices
+        name: "license",
     },
     {
         type: "input",
@@ -106,11 +148,6 @@ inquirer
         type: "input",
         message: "What is the URL for the repository?",
         name: "link"
-    },
-    {
-        type: "input",
-        message: "Add a screenshot from the assets/image folder:",
-        name: "screenshot"
     }
   ])
   .then(response => {
